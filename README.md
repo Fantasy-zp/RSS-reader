@@ -38,6 +38,11 @@
 1. **启动后端服务**
 
 ```bash
+# 启动 PostgreSQL 和 Miniflux（本地安装）
+brew services start postgresql@15
+brew services start miniflux
+
+# 或者使用 Docker（如果偏好容器化部署）
 docker-compose up -d
 ```
 
@@ -90,8 +95,8 @@ RSS-reader/
 ├── nginx/                   # Nginx 配置
 │   ├── nginx.conf           # 反向代理配置
 │   └── Dockerfile
-├── docker-compose.yml       # 开发环境
-├── docker-compose.prod.yml  # 生产环境
+├── docker-compose.yml       # Docker 部署（可选）
+├── docker-compose.prod.yml  # 生产环境 Docker 部署
 └── README.md
 ```
 
@@ -106,8 +111,11 @@ RSS-reader/
 Miniflux 的全文搜索依赖 PostgreSQL。对于中文内容，需要手动配置 `pg_trgm` 扩展：
 
 ```sql
--- 连接到数据库
-docker exec -it rss-postgres psql -U miniflux -d miniflux
+# 本地安装
+psql -U miniflux -d miniflux
+
+# 或使用 Docker
+# docker exec -it rss-postgres psql -U miniflux -d miniflux
 
 -- 创建扩展
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
@@ -175,7 +183,6 @@ export const useMyStore = defineStore('my', () => {
 
 A: 检查 Miniflux 服务是否正常启动，确认账号密码正确。
 
-
 **Q: 添加 RSS 源失败？**
 
 A: 确认 RSS 地址有效，部分网站可能有反爬限制。
@@ -183,6 +190,20 @@ A: 确认 RSS 地址有效，部分网站可能有反爬限制。
 **Q: 中文搜索无结果？**
 
 A: 参考"中文搜索支持"章节配置 PostgreSQL 扩展。
+
+**Q: 如何重启本地服务？**
+
+A:
+```bash
+# 重启 PostgreSQL
+brew services restart postgresql@15
+
+# 重启 Miniflux
+brew services restart miniflux
+
+# 查看服务状态
+brew services list
+```
 
 ## 许可证
 
